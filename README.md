@@ -18,3 +18,5 @@ In the root that is repop folder itself where there is hardhat.config.js run-
 (2) npx hardhat run --network localhost scripts/deploy.js
 
 Apart from this just connect to Metamask using any of the 20 dumy accounts received
+
+Please ignore the client folder.
