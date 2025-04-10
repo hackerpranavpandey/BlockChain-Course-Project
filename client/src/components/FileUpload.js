@@ -274,8 +274,11 @@ const FileUpload = ({ contract, account, provider }) => {
 
       // --- Step 8: Add CID and Hash to Blockchain ---
       // Ensure your contract's 'add' function signature matches: (address owner, string memory cid, string memory fileHash)
-      console.log(`Calling contract.add("${account}", "${fileCid}", "${calculatedHash}")`);
-      const transaction = await contract.add(account, fileCid, calculatedHash);
+      // console.log(`Calling contract.add("${account}", "${fileCid}", "${calculatedHash}")`);
+      // const transaction = await contract.add(account, fileCid, calculatedHash);
+      console.log(`Calling contract.add("${fileCid}", "${calculatedHash}")`);
+      // Pass only CID and Hash - owner is msg.sender in contract
+      const transaction = await contract.add(fileCid, calculatedHash);
       setMessage(`Transaction sent (${transaction.hash.substring(0, 10)}...). Waiting for confirmation...`);
       await transaction.wait();
 

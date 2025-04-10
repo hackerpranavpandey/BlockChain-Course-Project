@@ -1,51 +1,41 @@
-// SPDX-License-Identifier: GPL-3.0
-
-pragma solidity >=0.7.0 <0.9.0;
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0 <0.9.0;
 
 /**
  * @title Upload Contract
- * @dev Stores IPFS CIDs and their corresponding SHA-256 hashes for user uploads.
- * Manages sharing access to view this data.
+ * @dev Stores IPFS CIDs/Hashes, tracks ownership, and manages view permissions per item.
  */
 contract Upload {
 
-    // Struct to hold details about each uploaded image
     struct ImageRecord {
-        string ipfsCid;   // IPFS Content Identifier (v0 or v1)
-        string imageHash; // SHA-256 hash of the original image content
+        string ipfsCid;   // IPFS Content Identifier
+        string imageHash; // SHA-256 hash of the content
+        address owner;    // Address of the uploader/owner
         uint256 timestamp; // Time of upload
-    }
-
-    // Struct to manage access permissions granted by an owner to other users
-    struct Access {
-        address user;   // The address granted or denied access
-        bool access;    // True if access is granted, false otherwise
     }
 
     // --- State Variables ---
 
-    // Mapping from owner address to an array of their image records (CID + Hash)
-    mapping(address => ImageRecord[]) public imageData;
+    // Mapping from CID to its record details (including owner)
+    mapping(string => ImageRecord) public cidToRecord;
 
-    // Mapping to track explicit view permissions: owner => viewer => hasAccess
-    mapping(address => mapping(address => bool)) private ownership;
+    // Mapping from user address to an array of CIDs they own
+    mapping(address => string[]) public userOwnedCIDs;
 
-    // Mapping to store the list of users an owner has configured access for (for easy display)
-    // owner => array of Access structs
-    mapping(address => Access[]) public accessList;
+    // Mapping for specific item access permissions: cid => viewer_address => has_access
+    mapping(string => mapping(address => bool)) public itemAccess;
 
-    // Internal tracking to optimize updating the accessList: owner => user => existsInList
-    mapping(address => mapping(address => bool)) private userInAccessList;
+    // Mapping from user address to an array of CIDs shared *with* them
+    mapping(address => string[]) public sharedWithUserCIDs;
+    // Helper to find index in sharedWithUserCIDs for removal (viewer => cid => index)
+    mapping(address => mapping(string => uint256)) private sharedWithUserIndex;
+     // Store 0 as "not present", actual indices are stored + 1
+
+    // Mapping to check if a CID has been added to prevent duplicates
+    mapping(string => bool) private cidExists;
 
     // --- Events ---
 
-    /**
-     * @dev Emitted when a new image record (CID and hash) is added for a user.
-     * @param owner The address of the user who owns the image.
-     * @param ipfsCid The IPFS CID of the uploaded image.
-     * @param imageHash The SHA-256 hash of the uploaded image.
-     * @param timestamp The block timestamp when the image was added.
-     */
     event ImageAdded(
         address indexed owner,
         string ipfsCid,
@@ -53,134 +43,183 @@ contract Upload {
         uint256 timestamp
     );
 
-    /**
-     * @dev Emitted when access permission is changed for a user.
-     * @param owner The address of the user granting/revoking access.
-     * @param viewer The address whose access permission is being changed.
-     * @param granted True if access was granted, false if revoked.
-     */
-    event AccessChanged(
+    event ItemAccessGranted(
+        string indexed ipfsCid,
         address indexed owner,
-        address indexed viewer,
-        bool granted
+        address indexed viewer
     );
 
+     event ItemAccessRevoked(
+        string indexed ipfsCid,
+        address indexed owner,
+        address indexed viewer
+    );
 
     // --- Functions ---
 
     /**
-     * @notice Adds a new image record (IPFS CID and its hash) for the specified user.
-     * @dev Typically, `_user` should be `msg.sender`, but allowing explicit setting
-     *      for potential flexibility (e.g., admin functions, proxy patterns).
-     *      Requires non-empty CID and hash.
-     * @param _user The address of the owner of the image.
+     * @notice Adds a new image record (CID and hash) for the caller (msg.sender).
      * @param _ipfsCid The IPFS Content Identifier for the image.
      * @param _imageHash The SHA-256 hash of the image content.
      */
-    function add(address _user, string memory _ipfsCid, string memory _imageHash) external {
-        require(bytes(_ipfsCid).length > 0, "Upload: IPFS CID cannot be empty");
-        require(bytes(_imageHash).length > 0, "Upload: Image hash cannot be empty");
-        // Consider adding a check: require(_user == msg.sender, "Upload: Cannot add for another user");
-        // If you want to strictly enforce uploads only for the caller.
+    function add(string memory _ipfsCid, string memory _imageHash) external {
+        require(bytes(_ipfsCid).length > 0, "Upload: CID cannot be empty");
+        require(bytes(_imageHash).length > 0, "Upload: Hash cannot be empty");
+        require(!cidExists[_ipfsCid], "Upload: CID already exists");
 
-        imageData[_user].push(ImageRecord({
+        address owner = msg.sender;
+
+        ImageRecord memory newRecord = ImageRecord({
             ipfsCid: _ipfsCid,
             imageHash: _imageHash,
+            owner: owner,
             timestamp: block.timestamp
-        }));
+        });
 
-        emit ImageAdded(_user, _ipfsCid, _imageHash, block.timestamp);
+        cidToRecord[_ipfsCid] = newRecord;
+        userOwnedCIDs[owner].push(_ipfsCid);
+        cidExists[_ipfsCid] = true;
+
+        emit ImageAdded(owner, _ipfsCid, _imageHash, block.timestamp);
     }
 
     /**
-     * @notice Grants permission for another user to view the caller's images.
+     * @notice Grants another user permission to view a specific item (CID).
+     * @dev Only the owner of the item can call this.
+     * @param _cid The IPFS CID of the item to share.
      * @param _viewer The address to grant access to.
      */
-    function allow(address _viewer) external {
+    function grantItemAccess(string memory _cid, address _viewer) external {
+        require(cidExists[_cid], "Upload: Item does not exist");
+        require(_viewer != address(0), "Upload: Invalid viewer address");
+        ImageRecord storage record = cidToRecord[_cid];
+        require(record.owner == msg.sender, "Upload: Only owner can grant access");
         require(_viewer != msg.sender, "Upload: Cannot grant access to yourself");
-        require(!ownership[msg.sender][_viewer], "Upload: Access already granted"); // Prevent redundant calls/events
+        require(!itemAccess[_cid][_viewer], "Upload: Access already granted");
 
-        ownership[msg.sender][_viewer] = true;
+        itemAccess[_cid][_viewer] = true;
 
-        // Update or add to the accessList for easy frontend display
-        if (userInAccessList[msg.sender][_viewer]) {
-            // User exists, find and update their status
-            for (uint i = 0; i < accessList[msg.sender].length; i++) {
-                if (accessList[msg.sender][i].user == _viewer) {
-                    accessList[msg.sender][i].access = true;
-                    break; // Found and updated, exit loop
-                }
-            }
-        } else {
-            // User does not exist in the list, add them
-            accessList[msg.sender].push(Access(_viewer, true));
-            userInAccessList[msg.sender][_viewer] = true;
-        }
+        // Add to the viewer's list of shared items for efficient retrieval
+        sharedWithUserIndex[_viewer][_cid] = sharedWithUserCIDs[_viewer].length + 1;
+        sharedWithUserCIDs[_viewer].push(_cid);
 
-        emit AccessChanged(msg.sender, _viewer, true);
+        emit ItemAccessGranted(_cid, msg.sender, _viewer);
     }
 
     /**
-     * @notice Revokes permission for another user to view the caller's images.
+     * @notice Revokes permission for another user to view a specific item (CID).
+     * @dev Only the owner of the item can call this. Revoking from shared list is gas-intensive.
+     * @param _cid The IPFS CID of the item.
      * @param _viewer The address to revoke access from.
      */
-    function disallow(address _viewer) external { // Changed visibility to external
-        require(_viewer != msg.sender, "Upload: Cannot revoke access from yourself");
-        require(ownership[msg.sender][_viewer], "Upload: Access not currently granted"); // Ensure access exists to revoke
+    function revokeItemAccess(string memory _cid, address _viewer) external {
+        require(cidExists[_cid], "Upload: Item does not exist");
+        ImageRecord storage record = cidToRecord[_cid];
+        require(record.owner == msg.sender, "Upload: Only owner can revoke access");
+        require(itemAccess[_cid][_viewer], "Upload: Access not currently granted");
 
-        ownership[msg.sender][_viewer] = false;
+        itemAccess[_cid][_viewer] = false;
 
-        // Update the accessList (user must exist if ownership was true)
-        require(userInAccessList[msg.sender][_viewer], "Upload: Inconsistent state - user not in access list");
-        for (uint i = 0; i < accessList[msg.sender].length; i++) {
-            if (accessList[msg.sender][i].user == _viewer) {
-                accessList[msg.sender][i].access = false;
-                break; // Found and updated, exit loop
-            }
+        // --- Remove from sharedWithUserCIDs array ---
+        uint256 indexToRemove = sharedWithUserIndex[_viewer][_cid];
+        require(indexToRemove > 0, "Upload: CID not found in viewer's shared list index");
+        indexToRemove = indexToRemove - 1;
+
+        string[] storage sharedList = sharedWithUserCIDs[_viewer];
+        require(indexToRemove < sharedList.length, "Upload: Index out of bounds");
+
+        if (indexToRemove < sharedList.length - 1) {
+            string memory lastCid = sharedList[sharedList.length - 1];
+            sharedList[indexToRemove] = lastCid;
+            sharedWithUserIndex[_viewer][lastCid] = indexToRemove + 1;
         }
 
-        emit AccessChanged(msg.sender, _viewer, false);
+        sharedList.pop();
+        delete sharedWithUserIndex[_viewer][_cid];
+        // --- End Removal ---
+
+        emit ItemAccessRevoked(_cid, msg.sender, _viewer);
     }
 
     /**
-     * @notice Retrieves the IPFS CIDs and corresponding image hashes for a given user.
-     * @dev Requires the caller to be the owner or have been granted access by the owner.
-     * @param _user The address whose image records are being requested.
-     * @return cids An array of IPFS CIDs.
+     * @notice Retrieves CIDs, Hashes, and Owners for items accessible by the caller.
+     * @dev Returns items owned by msg.sender PLUS items shared specifically with msg.sender.
+     * @return cids An array of accessible IPFS CIDs.
      * @return hashes An array of corresponding SHA-256 image hashes.
+     * @return owners An array of the owner addresses for each corresponding item.
      */
-    function display(address _user) external view returns (string[] memory cids, string[] memory hashes) {
-        require(_user == msg.sender || ownership[_user][msg.sender], "Upload: You don't have access");
+    function getAccessibleCIDsAndHashes() external view returns (string[] memory cids, string[] memory hashes, address[] memory owners) {
+        address caller = msg.sender;
 
-        ImageRecord[] storage records = imageData[_user];
-        uint256 count = records.length;
+        // 1. Get owned items
+        string[] memory ownedCIDs = userOwnedCIDs[caller];
+        uint256 ownedCount = ownedCIDs.length;
 
-        cids = new string[](count);
-        hashes = new string[](count);
+        // 2. Get items shared with the caller
+        string[] memory sharedCIDs = sharedWithUserCIDs[caller];
+        uint256 sharedCount = sharedCIDs.length;
 
-        for (uint i = 0; i < count; i++) {
-            cids[i] = records[i].ipfsCid;
-            hashes[i] = records[i].imageHash;
+        // Temporary storage
+        uint256 maxCapacity = ownedCount + sharedCount;
+        string[] memory tempCids = new string[](maxCapacity);
+        string[] memory tempHashes = new string[](maxCapacity);
+        address[] memory tempOwners = new address[](maxCapacity);
+        uint256 accessibleCount = 0;
+
+        // Add owned items first
+        for (uint i = 0; i < ownedCount; i++) {
+             string memory cid = ownedCIDs[i];
+             ImageRecord storage record = cidToRecord[cid]; // Fetch record details
+             tempCids[accessibleCount] = cid;
+             tempHashes[accessibleCount] = record.imageHash;
+             tempOwners[accessibleCount] = record.owner; // Owner is the caller
+             accessibleCount++;
         }
 
-        // Named return values are implicitly returned
+        // Add items shared with the caller (only if access is still valid AND they aren't already added because the caller owns them)
+        for (uint i = 0; i < sharedCount; i++) {
+            string memory cid = sharedCIDs[i];
+            ImageRecord storage record = cidToRecord[cid]; // Fetch record details
+
+            // Check: 1. Access is still granted. 2. The caller is NOT the owner (already added above).
+            if (itemAccess[cid][caller] && record.owner != caller) {
+                 if (accessibleCount < maxCapacity) { // Safety check
+                     tempCids[accessibleCount] = cid;
+                     tempHashes[accessibleCount] = record.imageHash;
+                     tempOwners[accessibleCount] = record.owner; // Owner is the original uploader
+                     accessibleCount++;
+                 } else {
+                     break; // Should not be reached if maxCapacity is calculated correctly
+                 }
+            }
+             // If access was revoked (itemAccess[cid][caller] is false), skip it.
+             // If the caller owns the item (record.owner == caller), skip it (already added).
+        }
+
+        // Resize final arrays to the actual count
+        cids = new string[](accessibleCount);
+        hashes = new string[](accessibleCount);
+        owners = new address[](accessibleCount);
+
+        for (uint i = 0; i < accessibleCount; i++) {
+            cids[i] = tempCids[i];
+            hashes[i] = tempHashes[i];
+            owners[i] = tempOwners[i];
+        }
     }
 
-    /**
-     * @notice Retrieves the list of users the caller has granted/revoked access to.
-     * @return Access[] An array detailing who has access (user address and status).
-     */
-    function shareAccess() external view returns (Access[] memory) { // Changed visibility to external
-        return accessList[msg.sender];
-    }
+     /**
+      * @notice Helper to check if a specific viewer has access to a specific item.
+      * @param _cid The IPFS CID of the item.
+      * @param _viewer The address of the potential viewer.
+      * @return bool True if the viewer is the owner or has been granted specific access.
+      */
+    function checkItemAccess(string memory _cid, address _viewer) external view returns (bool) {
+         if (!cidExists[_cid]) return false;
 
-    /**
-     * @notice Checks if a specific viewer has access to a specific owner's images.
-     * @param _owner The owner address.
-     * @param _viewer The viewer address.
-     * @return bool True if the viewer has access, false otherwise.
-     */
-    function checkAccess(address _owner, address _viewer) external view returns (bool) {
-        return _owner == _viewer || ownership[_owner][_viewer];
+         ImageRecord storage record = cidToRecord[_cid];
+         if (record.owner == _viewer) return true;
+
+         return itemAccess[_cid][_viewer];
     }
 }
