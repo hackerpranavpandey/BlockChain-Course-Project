@@ -1,0 +1,173 @@
+/* --- Base & Reset --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  font-family: 'Inter', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #1a1c23; /* Dark background */
+  color: #e0e0e0; /* Light text */
+  font-size: 16px;
+}
+
+/* --- Main App Container --- */
+.app-container {
+  max-width: 1200px; /* Limit content width */
+  min-height: 100%;
+  margin: 0 auto; /* Center the container */
+  padding: 0 20px 40px 20px; /* Add some padding */
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Header --- */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25px 0;
+  border-bottom: 1px solid #3a3f4d; /* Subtle separator */
+  margin-bottom: 30px;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  gap: 15px; /* Spacing between items if they wrap */
+}
+
+.header-title h1 {
+  font-family: 'Orbitron', sans-serif; /* Techy font */
+  font-size: 2rem; /* Adjust size as needed */
+  color: #ffffff;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.header-title .subtitle {
+  font-size: 0.9rem;
+  color: #a0a4b8;
+  margin-top: 4px;
+  display: block;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 20px; /* Spacing between connection info and button */
+}
+
+.connection-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* Align text to the right */
+    gap: 4px;
+    font-size: 0.85rem;
+    background-color: #2a2d3a; /* Slightly lighter background */
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #3a3f4d;
+}
+
+.account-address {
+    color: #c0c4d8;
+    font-family: monospace; /* Good for addresses */
+}
+
+.network-name {
+    color: #8a8f9f;
+    font-size: 0.75rem;
+}
+
+.connection-status {
+  font-size: 0.9rem;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+.connection-status.loading {
+    color: #f0ad4e; /* Orange for loading */
+}
+.connection-status.disconnected {
+    color: #d9534f; /* Red for disconnected */
+    background-color: rgba(217, 83, 79, 0.1);
+}
+
+/* General Button Style (can be overridden by specific classes) */
+.button {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.button:hover {
+  opacity: 0.9;
+}
+.button:active {
+    transform: scale(0.98);
+}
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Share Button Specific Style */
+.share-button {
+  background-color: #007bff; /* Primary blue */
+  color: white;
+}
+.share-button:hover {
+    background-color: #0056b3;
+}
+
+/* --- Main Content Area --- */
+.app-main {
+  flex-grow: 1; /* Allow main content to take remaining space */
+  /* Optional: Add layout for FileUpload and Display if needed */
+   display: flex;
+   flex-direction: column;
+   gap: 40px; /* Space between FileUpload and Display */
+   align-items: center; /* Center components horizontally */
+}
+
+/* Style for the prompt when wallet is not connected */
+.connect-prompt {
+  text-align: center;
+  margin-top: 50px;
+  padding: 30px;
+  background-color: rgba(0, 123, 255, 0.1); /* Light blue background */
+  border: 1px solid rgba(0, 123, 255, 0.3);
+  border-radius: 8px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.connect-prompt h2 {
+    color: #cce5ff; /* Lighter blue text */
+    margin-bottom: 15px;
+}
+.connect-prompt p {
+    color: #a0a4b8;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+
+/* --- Removing old/unused styles --- */
+.App-logo, .App-header, .App-link, .bg, .bg2, .bg3, .content, header, header .overlay {
+  /* Remove styles related to default CRA and old backgrounds/headers */
+  /* You can delete these rules entirely */
+  display: none; /* Quick way to hide them if deleting is too much */
+}
+
+/* --- Ensure component styles integrate well --- */
+/* Add margin/padding overrides if FileUpload.css/Display.css cause layout issues */
+/* Example: */
+/* .file-upload-container { margin-bottom: 30px; } */
+/* .display-container { margin-top: 30px; } */
+
+/* Add styles for Notification component if needed */

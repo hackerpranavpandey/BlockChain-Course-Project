@@ -1,0 +1,220 @@
+/* === Display.css === */
+
+/* Container for the entire Display component section */
+/* This class should match the one added in App.css */
+.display-container {
+  width: 100%;
+  max-width: 900px; /* Or match App.css max-width */
+  background-color: #212529; /* Match App.css component bg */
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #3a3f4d; /* Match App.css component border */
+  margin-bottom: 20px; /* Consistent margin below */
+  color: #e0e0e0; /* Ensure text color matches theme */
+}
+
+/* Status/Error/Loading messages specific to Display */
+.display-container .status-message {
+  text-align: center;
+  margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+.display-container .status-message.error {
+    background-color: rgba(220, 53, 69, 0.1); /* Light red background */
+    color: #f8d7da; /* Light red text */
+    border: 1px solid rgba(220, 53, 69, 0.3);
+}
+.display-container .loading-indicator {
+  text-align: center;
+  margin-bottom: 15px;
+  color: #adb5bd; /* Grayish text */
+}
+.display-container .no-data-message {
+  width: 100%;
+  text-align: center;
+  padding: 30px;
+  color: #6c757d; /* Muted text color */
+}
+
+
+/* Styles for the container holding all media items */
+.image-list {
+  display: flex;
+  flex-wrap: wrap;        /* Allow items to wrap */
+  gap: 20px;              /* Spacing between items */
+  justify-content: center;  /* Center items horizontally */
+  padding: 10px 0;        /* Add some padding */
+  margin-bottom: 30px;    /* <<< SPACE BELOW LIST / ABOVE CONTROLS >>> */
+  min-height: 100px;      /* Give it some height even when empty */
+}
+
+/* Styles for the container around each individual media item */
+.image-item-container {
+  border: 1px solid #3a3f4d; /* Match theme border */
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #2c303a; /* Slightly different background for item cards */
+  color: #e0e0e0;
+  width: 210px; /* Adjust width as needed */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-sizing: border-box;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+.image-item-container:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+
+/* Style for both image and video elements */
+.media-item {
+  max-width: 100%;
+  height: 160px; /* Increased height for media preview */
+  object-fit: cover;
+  display: block;
+  margin-bottom: 10px;
+  background-color: #3a3f4d; /* Darker placeholder background */
+  border-radius: 4px;
+}
+.video-item {
+  object-fit: contain; /* Contain preserves aspect ratio for video */
+}
+
+/* Fallback style for error state */
+.media-fallback {
+  width: 100%;
+  height: 160px; /* Match media height */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-color: #3a3f4d; /* Darker placeholder */
+  color: #adb5bd; /* Muted text */
+  font-size: 0.9em;
+  padding: 10px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+.media-fallback.error {
+    color: #f8d7da; /* Light red text */
+    border: 1px dashed #dc3545; /* Dashed red border */
+}
+.media-fallback a {
+    margin-top: 8px;
+    font-size: 0.8em;
+    color: #0d6efd; /* Link color */
+    text-decoration: underline;
+}
+.media-fallback a:hover {
+    color: #3b8eff;
+}
+
+
+/* Style for the hash display */
+.image-hash {
+    font-size: 0.75rem;
+    color: #adb5bd; /* Muted gray */
+    margin-bottom: 12px; /* More space below hash */
+    word-break: break-all;
+    font-family: monospace;
+    width: 100%; /* Ensure it takes width for centering */
+    padding: 0 5px; /* Prevent text touching edges */
+}
+
+/* Container for verification status and button */
+.verification-section {
+    margin-top: auto; /* Push verification to the bottom */
+    padding-top: 12px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px; /* Increased gap */
+    border-top: 1px solid #3a3f4d; /* Separator line */
+}
+
+/* Style for the verification status text */
+.verification-status {
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 4px;
+    min-width: 90px; /* Give status text slightly more width */
+    text-align: center; /* Ensure text inside is centered */
+}
+
+/* Status-specific colors (Dark Theme) */
+.status-idle { background-color: #495057; color: #ced4da; } /* Gray */
+.status-verifying { background-color: #ffc107; color: #000; } /* Amber/Yellow */
+.status-verified { background-color: #198754; color: white; } /* Green */
+.status-mismatch { background-color: #dc3545; color: white; } /* Red */
+.status-error { background-color: #ffca2c; color: #333; border: 1px solid #dc3545;} /* Amber bg, Red border */
+
+
+/* Style for the verification button */
+.verify-button {
+    /* Inherit general .button styles from App.css or define here */
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    background-color: #6c757d; /* Secondary/Gray color */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.verify-button:hover:not(:disabled) {
+    background-color: #5a6268;
+}
+.verify-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+
+/* Styles for controls (input/button) at the bottom of the Display component */
+.controls {
+  text-align: center;
+  padding: 15px 0 0 0; /* Padding top, remove bottom padding if margin is used */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px; /* <<< SPACE BETWEEN INPUT AND BUTTON >>> */
+  flex-wrap: wrap;
+  margin-top: 20px; /* <<< SPACE ABOVE CONTROLS / BELOW LIST >>> */
+  border-top: 1px solid #3a3f4d; /* Separator line */
+}
+
+.controls .address {
+    padding: 9px 12px; /* Match button padding */
+    border: 1px solid #495057; /* Darker border */
+    border-radius: 6px; /* Match button */
+    background-color: #343a40; /* Dark input bg */
+    color: #e0e0e0; /* Light text */
+    min-width: 250px;
+    flex-grow: 1;
+    max-width: 400px;
+    font-size: 0.9rem;
+}
+.controls .address::placeholder {
+    color: #6c757d; /* Muted placeholder text */
+}
+
+
+.controls .button {
+    /* Use general .button styles from App.css */
+    padding: 10px 18px; /* Match general button */
+    background-color: #198754; /* Green color for "Get Data" */
+    color: white;
+    flex-shrink: 0;
+}
+.controls .button:hover:not(:disabled) {
+    background-color: #157347;
+}
