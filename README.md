@@ -4,20 +4,13 @@ This project demonstrates a basic Hardhat use case. It comes with a sample contr
 
 Try running some of the following tasks:
 
-```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat ignition deploy ./ignition/modules/Lock.js
-```
 
 In the Backend Folder run -
 (1) python3 backend.py ---port 5001
 (2) python3 backend.py ---port 5002
 (3) python3 backend.py ---port 5003
 
-In the client single command-
+In the Frontend Folder run single command-
 (1) npm start
 
 In the root that is repop folder itself where there is hardhat.config.js run-
