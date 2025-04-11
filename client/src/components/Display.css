@@ -218,3 +218,46 @@
 .controls .button:hover:not(:disabled) {
     background-color: #157347;
 }
+
+.item-actions {
+  display: flex;            /* Arrange buttons in a row */
+  justify-content: center;  /* Center buttons horizontally */
+  gap: 10px;                /* Space between buttons */
+  width: 100%;              /* Take full width within the card */
+  margin-top: 15px;         /* Space above the action buttons */
+  padding-top: 15px;        /* Padding above if using a border */
+  border-top: 1px solid #3a3f4d; /* Optional separator line */
+}
+
+/* Specific styling for the Share Button */
+.share-button {
+  /* Inherits base .button styles */
+  background-color: #0d6efd; /* Blue color for primary action */
+  color: white;
+  border: none; /* Remove border if base button has one */
+  padding: 6px 14px; /* Adjust padding for consistency */
+  font-size: 0.85rem; /* Adjust font size for consistency */
+}
+.share-button:hover:not(:disabled) {
+  background-color: #0b5ed7; /* Darker blue on hover */
+}
+
+/* Specific styling for the Trace Button */
+.trace-button {
+  /* Inherits base .button styles */
+  background-color: #6c757d; /* Gray color for secondary action */
+  color: white;
+  border: none; /* Remove border if base button has one */
+  padding: 6px 14px; /* Match share button padding */
+  font-size: 0.85rem; /* Match share button font size */
+}
+.trace-button:hover:not(:disabled) {
+  background-color: #5a6268; /* Darker gray on hover */
+}
+
+/* Ensure disabled states look consistent if not handled by base .button */
+.share-button:disabled,
+.trace-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
