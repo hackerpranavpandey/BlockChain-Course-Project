@@ -121,12 +121,6 @@ function App() {
              ) : (
                 <span className="connection-status disconnected">Wallet Not Connected</span>
              )}
-             {/* Share Button */}
-             {account && contract && !modalOpen && (
-               <button className="button share-button" onClick={() => setModalOpen(true)}>
-                 Share Access
-               </button>
-             )}
           </div>
         </header>
 
