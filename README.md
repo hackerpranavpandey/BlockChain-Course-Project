@@ -1,6 +1,6 @@
 # DeepFake Detection
 
-This Project is a decentralized application demonstrating a system for detecting deepfakes in images/videos, verifying their authenticity using cryptographic hashes, storing them decentrally on IPFS, and managing sharing permissions securely via a blockchain smart contract.
+## This Project is a decentralized application demonstrating a system for detecting deepfakes in images/videos, verifying their authenticity using cryptographic hashes, storing them decentrally on IPFS, and managing sharing permissions securely via a blockchain smart contract.
 ---
 
 ## Table of Contents
@@ -77,6 +77,9 @@ Ensure you have the following installed before proceeding:
 
 Install the required packages then only you will be able to start the DApp
 
+```
+# first activate your python virtual environment and install python dependencies mentioned in requirement.txt
+pip install -r requirement.txt
 ```
 
 **Blockchain Development:**
