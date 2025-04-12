@@ -75,9 +75,7 @@ Ensure you have the following installed before proceeding:
 - Python >= 3.12
 - Additional dependencies listed in `requirement.txt`
 
-Install the required packages with:
-```bash
-pip install -r requirement.txt
+Install the required packages then only you will be able to start the DApp
 ```
 
 **Blockchain Development:**
