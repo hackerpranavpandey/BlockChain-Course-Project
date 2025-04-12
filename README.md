@@ -10,7 +10,7 @@ In the Backend Folder run -
 (2) python3 backend.py ---port 5002
 (3) python3 backend.py ---port 5003
 
-In the Frontend Folder run single command-
+In the client Folder run single command-
 (1) npm start
 
 In the root that is repop folder itself where there is hardhat.config.js run-
