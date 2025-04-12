@@ -191,6 +191,7 @@ npm start
 ├── ignition/                 # Hardhat Ignition deployment modules (if used)
 ├── scripts/                  # Deployment scripts (e.g., deploy.js)
 ├── screenshots               # It contain all the screenshots of the DApp
+├── requirements.txt
 ├── hardhat.config.js         # Hardhat configuration file
 ├── package-lock.json         # Exact dependency versions for npm
 ├── package.json              # Project metadata and Node.js dependencies
