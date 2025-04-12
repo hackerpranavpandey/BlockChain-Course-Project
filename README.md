@@ -76,6 +76,7 @@ Ensure you have the following installed before proceeding:
 - Additional dependencies listed in `requirement.txt`
 
 Install the required packages then only you will be able to start the DApp
+
 ```
 
 **Blockchain Development:**
@@ -91,6 +92,7 @@ Install the required packages then only you will be able to start the DApp
 ## Installation
 
 Clone this repository to your local machine:
+
 ```bash
 git clone https://github.com/hackerpranavpandey/BlockChain-Course-Project.git
 cd BlockChain-Course-Project
@@ -100,12 +102,13 @@ cd BlockChain-Course-Project
 
 ### Please see this video on how to start the Application :-
   
-    https://youtu.be/aRHTKzFZOkw?si=3DcqbRniiuajmQTQ
+    [Link](https://youtu.be/aRHTKzFZOkw?si=3DcqbRniiuajmQTQ)
 
 ### 1. Start Backend Nodes
 For the consensus mechanism, you need to run three instances of the Flask backend, each on a different port specified in client/src/components/FileUpload.jsx (e.g., 5001, 5002, 5003).
 
 **Commands common for three terminals**
+
 ```bash
 cd Backend
 # Activate virtual environment if not already active
@@ -128,6 +131,7 @@ python backend3.py --port 5003
 ```
 
 ### 2. Start Local Blockchain Node
+
 In a new terminal, start the Hardhat local node from the project root:
 ```bash
 npm i # to install node modules
@@ -135,6 +139,7 @@ npx hardhat node
 ```
 
 ### 3. Deploy Smart Contract
+
 In another new terminal, deploy the Upload.sol contract to the local Hardhat node:
 ```bash
 npx hardhat run --network localhost scripts/deploy.js
@@ -142,9 +147,11 @@ npx hardhat run --network localhost scripts/deploy.js
 IMPORTANT: Note the contract address printed in the console after successful deployment.
 
 ### 4. Update Frontend Configuration
+
 Open the file in your frontend where the contract instance is initialized (client/src/App.js). Update the contractAddress variable with the address you noted in the previous step.
 
 ### 5. Start Frontend Application
+
 ```bash
 cd client
 npm i # to install node modules
@@ -178,7 +185,6 @@ npm start
 ├── hardhat.config.js         # Hardhat configuration file
 ├── package-lock.json         # Exact dependency versions for npm
 ├── package.json              # Project metadata and Node.js dependencies
-├── requirements.txt          # Python dependencies
 └── README.md                 # documentation file
 ```
 
