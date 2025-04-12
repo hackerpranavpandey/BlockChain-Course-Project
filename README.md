@@ -112,17 +112,17 @@ cd Backend
 
 **Terminal 1:**
 ```bash
-python backend.py --port 5001
+python backend1.py --port 5001
 ```
 
 **Terminal 2:**
 ```bash
-python backend.py --port 5002
+python backend2.py --port 5002
 ```
 
 **Terminal 3:**
 ```bash
-python backend.py --port 5003
+python backend3.py --port 5003
 ```
 
 ### 2. Start Local Blockchain Node
