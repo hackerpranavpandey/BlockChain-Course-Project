@@ -33,24 +33,22 @@ const buildDisplayUrl = (cidOrUri) => {
     return null;
   }
   const gateways = [
-    "https://gateway.pinata.cloud/ipfs/", // Using Pinata as primary
-    // Add other gateways as fallbacks if needed
+    "https://gateway.pinata.cloud/ipfs/",
   ];
   const gateway = gateways[0];
-
-  // Check various formats
   if (cidOrUri.startsWith("http://") || cidOrUri.startsWith("https://")) {
-    return cidOrUri; // Assume it's a direct link or already gateway link
-  } else if (cidOrUri.startsWith("ipfs://")) {
+    return cidOrUri;
+  } 
+  else if (cidOrUri.startsWith("ipfs://")) {
     const cid = cidOrUri.substring(7);
     return cid.length > 40 ? `${gateway}${cid}` : null;
-  } else if (
+  } 
+  else if (
     (cidOrUri.startsWith("Qm") || cidOrUri.startsWith("b")) &&
-    cidOrUri.length > 40
-  ) {
-    // console.log(`Identified CID: ${cidOrUri}, building URL with ${gateway}`);
+    cidOrUri.length > 40) {
     return `${gateway}${cidOrUri}`;
-  } else {
+  } 
+  else {
     console.warn(`Skipping unrecognized format for URL building: ${cidOrUri}`);
     return null;
   }
@@ -60,24 +58,18 @@ const MediaRenderer = ({ url, altText }) => {
   const [mediaType, setMediaType] = useState("unknown");
   const [tryVideo, setTryVideo] = useState(false);
   const [hasError, setHasError] = useState(false);
-
   useEffect(() => {
-    // Reset state when URL changes
     setHasError(false);
     setTryVideo(false);
-    setMediaType("unknown"); // Reset media type determination
-
+    setMediaType("unknown");
     if (!url) {
       setHasError(true);
       return;
     }
-
-    // Basic extension check (can be improved with MIME type fetching if needed)
     const extensionMatch = url.match(/\.([^.?#]+)(?:[?#]|$)/i);
     const extension = extensionMatch ? extensionMatch[1].toLowerCase() : null;
     const imageExtensions = ["png", "jpg", "jpeg", "gif", "webp", "bmp", "svg"];
-    const videoExtensions = ["mp4", "webm", "ogg", "mov"]; // Common web video types
-
+    const videoExtensions = ["mp4", "webm", "ogg", "mov"];
     if (extension) {
       if (imageExtensions.includes(extension)) {
         setMediaType("image");
@@ -85,24 +77,23 @@ const MediaRenderer = ({ url, altText }) => {
         setMediaType("video");
       }
     }
-    // If no extension or unrecognized, it remains 'unknown'
   }, [url]);
 
   const handleImageError = () => {
     if (mediaType === "unknown" && !tryVideo) {
       console.warn(`Image attempt failed for ${url}, trying video.`);
-      setTryVideo(true); // Set flag to attempt video render
+      setTryVideo(true);
     } else {
       console.warn(
         `Failed to load image (or unknown after video attempt) from: ${url}`
       );
-      setHasError(true); // Final error state
+      setHasError(true);
     }
   };
 
   const handleVideoError = () => {
     console.warn(`Failed to load video from: ${url}`);
-    setHasError(true); // Final error state
+    setHasError(true);
   };
 
   if (hasError) {
@@ -116,7 +107,6 @@ const MediaRenderer = ({ url, altText }) => {
     );
   }
 
-  // Render video if type is video OR if image failed and we're trying video
   if (mediaType === "video" || tryVideo) {
     return (
       <video
@@ -135,7 +125,6 @@ const MediaRenderer = ({ url, altText }) => {
     );
   }
 
-  // Render image if type is image OR if type is unknown and we haven't tried video yet
   if (mediaType === "image" || (mediaType === "unknown" && !tryVideo)) {
     return (
       <img
@@ -148,14 +137,11 @@ const MediaRenderer = ({ url, altText }) => {
       />
     );
   }
-
-  // Fallback while determining type or if truly unknown and not an error yet
   return <div className="media-fallback">Loading media...</div>;
 };
 
 // --- Main Display Component ---
 const Display = ({ contract, account }) => {
-  // State: displayData holds { id, cid, hash, owner, displayUrl }
   const [displayData, setDisplayData] = useState([]);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -173,7 +159,7 @@ const Display = ({ contract, account }) => {
     if (!contract || !account) {
       setMessage("Please connect wallet and ensure contract is loaded.");
       setLoading(false);
-      setDisplayData([]); // Clear data if disconnected
+      setDisplayData([]);
       return;
     }
     setDisplayData([]);
@@ -181,7 +167,6 @@ const Display = ({ contract, account }) => {
     setLoading(true);
     setVerificationStatus({});
     const connectedAccountLower = account.toLowerCase();
-
     try {
       setMessage(
         `Fetching accessible content for your account (${account.substring(
@@ -192,13 +177,8 @@ const Display = ({ contract, account }) => {
       console.log(
         `[Display getdata] Calling contract.getAccessibleCIDsAndHashes() for ${account}`
       );
-
-      // --- Call the NEW Smart Contract Function ---
-      // No longer takes an address argument
       const result = await contract.getAccessibleCIDsAndHashes();
       console.log("[Display getdata] Raw contract result:", result);
-
-      // --- Validate Contract Result Structure ---
       if (
         !Array.isArray(result) ||
         result.length !== 3 ||
@@ -226,7 +206,6 @@ const Display = ({ contract, account }) => {
         `[Display getdata] Received ${cidsArray.length} accessible items.`
       );
 
-      // --- Process Fetched Data ---
       if (cidsArray.length === 0) {
         setMessage(
           `No content found that you own or that has been shared with you.`
@@ -247,36 +226,34 @@ const Display = ({ contract, account }) => {
             hash.length > 10 &&
             ethers.utils.isAddress(owner)
           ) {
-            const uniqueId = cid; // CID is the unique identifier
+            const uniqueId = cid;
             processedData.push({
               id: uniqueId,
               cid: cid,
               hash: hash,
-              owner: owner, // Store the owner
+              owner: owner,
               displayUrl: displayUrl,
             });
-            initialStatus[uniqueId] = "idle"; // Set initial verification status
+            initialStatus[uniqueId] = "idle";
           } else {
             console.warn(
               `[Display getdata] Skipping item index ${i}: Invalid URL('${displayUrl}') / Hash('${hash}') / Owner('${owner}') derived from CID '${cid}'`
             );
           }
         }
-
-        // Optionally sort: Owned items first, then shared items
         processedData.sort((a, b) => {
           const aIsOwner = a.owner.toLowerCase() === connectedAccountLower;
           const bIsOwner = b.owner.toLowerCase() === connectedAccountLower;
-          if (aIsOwner && !bIsOwner) return -1; // a (owned) comes before b (shared)
-          if (!aIsOwner && bIsOwner) return 1; // b (owned) comes before a (shared)
-          return 0; // Keep original order among owned/shared items
+          if (aIsOwner && !bIsOwner) return -1;
+          if (!aIsOwner && bIsOwner) return 1;
+          return 0;
         });
 
         if (processedData.length > 0) {
           console.log("[Display getdata] Setting display data:", processedData);
           setDisplayData(processedData);
           setVerificationStatus(initialStatus);
-          setMessage(""); // Clear loading/status message on success
+          setMessage("");
         } else {
           setDisplayData([]);
           setMessage(`No processable content found after filtering.`);
@@ -295,21 +272,19 @@ const Display = ({ contract, account }) => {
     } finally {
       setLoading(false);
     }
-  }, [contract, account]); // Dependencies for useCallback
+  }, [contract, account]);
 
-  // --- Fetch data on initial load or when account/contract changes ---
   useEffect(() => {
-    // Only fetch if contract and account are available
     if (contract && account) {
       getdata();
-    } else {
-      // Clear data if disconnected or contract not loaded
+    } 
+    else {
       setDisplayData([]);
       setMessage("Connect wallet to view content.");
     }
-  }, [getdata]); // Depend on the memoized getdata function
+  }, [getdata]);
 
-  // --- verifyHash Function (Keep as is) ---
+  // --- verifyHash Function ---
   const verifyHash = useCallback(async (imageUrl, expectedHash, itemId) => {
     if (!imageUrl || !expectedHash || !itemId) {
       console.error("VerifyHash: Missing arguments");
@@ -341,9 +316,8 @@ const Display = ({ contract, account }) => {
       console.error(`❌ Verification ERROR for ${itemId}:`, error);
       setVerificationStatus((prev) => ({ ...prev, [itemId]: "error" }));
     }
-  }, []); // Empty dependency array is fine here
-
-  // --- getStatusInfo Function (Keep as is) ---
+  }, []);
+  // --- getStatusInfo Function ---
   const getStatusInfo = (status) => {
     switch (status) {
       case "verifying":
@@ -356,7 +330,7 @@ const Display = ({ contract, account }) => {
         return { text: "⚠️ Error", class: "status-error" };
       case "idle":
       default:
-        return { text: "Verify Hash", class: "status-idle" }; // Button text change
+        return { text: "Verify Hash", class: "status-idle" };
     }
   };
 
@@ -367,8 +341,8 @@ const Display = ({ contract, account }) => {
       return;
     }
     console.log("[Display] Opening share modal for CID:", cid);
-    setCidToShare(cid); // Set the CID state
-    setModalOpen(true); // Open the modal
+    setCidToShare(cid);
+    setModalOpen(true);
   };
 
   const handleOpenTraceModal = (cid, owner) => {
@@ -380,11 +354,11 @@ const Display = ({ contract, account }) => {
       `[Display] Opening trace modal for CID: ${cid}, Owner: ${owner}`
     );
     setCidToTrace(cid);
-    setOwnerForTrace(owner); // Store owner for the modal
-    setIsTraceModalOpen(true); // Open the trace modal
+    setOwnerForTrace(owner);
+    setIsTraceModalOpen(true);
   };
 
-  // --- Component Return JSX ---
+
   return (
     <>
       {" "}
@@ -405,7 +379,7 @@ const Display = ({ contract, account }) => {
         <div className="controls refresh-controls">
           <button
             className="button refresh-button"
-            onClick={getdata} // Call getdata directly
+            onClick={getdata}
             disabled={loading || !contract || !account}
           >
             {loading ? "Refreshing..." : "Refresh"}
@@ -446,7 +420,7 @@ const Display = ({ contract, account }) => {
                 {/* Verification Section */}
                 <div className="verification-section">
                   <button
-                    className={`verify-button ${statusInfo.class}`} // Use status class for potential styling
+                    className={`verify-button ${statusInfo.class}`}
                     onClick={() =>
                       verifyHash(item.displayUrl, item.hash, item.id)
                     }
@@ -454,23 +428,23 @@ const Display = ({ contract, account }) => {
                       loading ||
                       verificationStatus[item.id] === "verifying" ||
                       verificationStatus[item.id] === "verified"
-                    } // Disable if verifying or already verified
+                    }
                   >
                     {statusInfo.text}
                   </button>
                 </div>
                 <div className="item-actions">
                   <button
-                    className="button share-button" // Add specific class for styling
+                    className="button share-button"
                     onClick={() => handleOpenShareModal(item.cid)}
-                    disabled={loading || isModalOpen} // Disable if loading data or modal already open
+                    disabled={loading || isModalOpen}
                   >
                     Share
                   </button>
                   <button
-                    className="button trace-button" // Add specific class for styling
-                    onClick={() => handleOpenTraceModal(item.cid, item.owner)} // Pass owner
-                    disabled={loading || isModalOpen || isTraceModalOpen} // Disable if any modal is open
+                    className="button trace-button"
+                    onClick={() => handleOpenTraceModal(item.cid, item.owner)}
+                    disabled={loading || isModalOpen || isTraceModalOpen}
                   >
                     Trace
                   </button>
@@ -483,18 +457,18 @@ const Display = ({ contract, account }) => {
       {isModalOpen && (
         <Modal
           setModalOpen={setModalOpen}
-          contract={contract} // Pass contract instance
-          account={account} // Pass current account
-          cidToShare={cidToShare} // Pass the specific CID to share
+          contract={contract}
+          account={account}
+          cidToShare={cidToShare}
         />
       )}
       {isTraceModalOpen && (
         <TraceabilityModal
           setModalOpen={setIsTraceModalOpen}
           contract={contract}
-          account={account} // May not be strictly needed by trace modal, but pass anyway
-          cidToTrace={cidToTrace} // The CID to trace
-          owner={ownerForTrace} // The original owner
+          account={account}
+          cidToTrace={cidToTrace}
+          owner={ownerForTrace}
         />
       )}
     </>

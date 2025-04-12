@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { ethers } from "ethers"; // Import ethers if needed
-import { toast } from "react-toastify"; // Optional for notifications
-import "./Modal.css"; // Reuse modal styles
+import { ethers } from "ethers";
+import { toast } from "react-toastify";
+import "./Modal.css";
 
 const TraceabilityModal = ({
   contract,
@@ -10,23 +10,19 @@ const TraceabilityModal = ({
   owner,
   setModalOpen,
 }) => {
-  const [trace, setTrace] = useState([]); // Array to hold trace steps [{granter, viewer, blockNumber}]
+  const [trace, setTrace] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Inside TraceabilityModal.jsx
-
   const fetchTrace = useCallback(async () => {
     if (!contract || !cidToTrace) return;
-
     setIsLoading(true);
     setError("");
     setTrace([]);
-
     try {
       console.log(`[Traceability] Fetching trace for CID: ${cidToTrace}`);
       const filter = contract.filters.ItemAccessGranted(cidToTrace, null, null);
-      const deploymentBlock = 0; // Adjust if needed
+      const deploymentBlock = 0;
       const events = await contract.queryFilter(
         filter,
         deploymentBlock,
@@ -35,9 +31,7 @@ const TraceabilityModal = ({
       console.log(
         `[Traceability] Found ${events.length} ItemAccessGranted events.`
       );
-
       if (events.length === 0) {
-        // Keep error handling as is
         setError("No sharing events found for this item beyond the owner.");
         setIsLoading(false);
         return;
@@ -48,22 +42,13 @@ const TraceabilityModal = ({
           `[Traceability] Raw event.args for event index ${index}:`,
           event.args
         );
-
-        // --- FIX: Use numeric indices ---
         // Solidity event: ItemAccessGranted(string indexed ipfsCid, address indexed granter, address indexed viewer)
-        // Corresponding indices in args array:                 0,                     1,                      2
-        const granterAddr = event.args ? event.args[1] : null; // Use index 1 for the 'granter' parameter
-        const viewerAddr = event.args ? event.args[2] : null; // Use index 2 for the 'viewer' parameter
-        // --- END FIX ---
-
-        // Optional: Add type check for safety, especially if args might be missing
-        const isValidGranter =
-          typeof granterAddr === "string" && granterAddr.startsWith("0x");
-        const isValidViewer =
-          typeof viewerAddr === "string" && viewerAddr.startsWith("0x");
-
+        // Corresponding indices in args array: 0, 1, 2
+        const granterAddr = event.args ? event.args[1] : null;
+        const viewerAddr = event.args ? event.args[2] : null;
+        const isValidGranter = typeof granterAddr === "string" && granterAddr.startsWith("0x");
+        const isValidViewer = typeof viewerAddr === "string" && viewerAddr.startsWith("0x");
         return {
-          // Use the values obtained from numeric indices
           granter: isValidGranter ? granterAddr : null,
           viewer: isValidViewer ? viewerAddr : null,
           blockNumber: event.blockNumber,
@@ -72,23 +57,22 @@ const TraceabilityModal = ({
       });
 
       traceSteps.sort((a, b) => a.blockNumber - b.blockNumber);
-      console.log("[Traceability] Processed Trace Steps:", traceSteps); // Check this log again after fix
+      console.log("[Traceability] Processed Trace Steps:", traceSteps);
       setTrace(traceSteps);
-    } catch (err) {
-      // Keep error handling as is
+    } 
+    catch (err) {
       console.error("[Traceability] Error fetching trace:", err);
       setError("Failed to fetch sharing history. See console for details.");
-      // toast.error("Failed to fetch sharing history."); // Uncomment if using toast
-    } finally {
+    } 
+    finally {
       setIsLoading(false);
     }
   }, [contract, cidToTrace]);
 
   useEffect(() => {
     fetchTrace();
-  }, [fetchTrace]); // Run fetchTrace when component mounts or dependencies change
+  }, [fetchTrace]);
 
-  // Helper to format addresses for display
   const formatAddr = (addr) =>
     addr
       ? `${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}`

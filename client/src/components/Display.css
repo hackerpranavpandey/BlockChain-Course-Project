@@ -1,19 +1,14 @@
-/* === Display.css === */
-
-/* Container for the entire Display component section */
-/* This class should match the one added in App.css */
 .display-container {
   width: 100%;
-  max-width: 900px; /* Or match App.css max-width */
-  background-color: #212529; /* Match App.css component bg */
+  max-width: 900px;
+  background-color: #212529;
   padding: 20px;
   border-radius: 8px;
-  border: 1px solid #3a3f4d; /* Match App.css component border */
-  margin-bottom: 20px; /* Consistent margin below */
-  color: #e0e0e0; /* Ensure text color matches theme */
+  border: 1px solid #3a3f4d;
+  margin-bottom: 20px;
+  color: #e0e0e0;
 }
 
-/* Status/Error/Loading messages specific to Display */
 .display-container .status-message {
   text-align: center;
   margin-bottom: 15px;
@@ -21,43 +16,43 @@
   border-radius: 4px;
   font-size: 0.9rem;
 }
+
 .display-container .status-message.error {
-    background-color: rgba(220, 53, 69, 0.1); /* Light red background */
-    color: #f8d7da; /* Light red text */
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #f8d7da;
     border: 1px solid rgba(220, 53, 69, 0.3);
 }
+
 .display-container .loading-indicator {
   text-align: center;
   margin-bottom: 15px;
-  color: #adb5bd; /* Grayish text */
+  color: #adb5bd;
 }
+
 .display-container .no-data-message {
   width: 100%;
   text-align: center;
   padding: 30px;
-  color: #6c757d; /* Muted text color */
+  color: #6c757d;
 }
 
-
-/* Styles for the container holding all media items */
 .image-list {
   display: flex;
-  flex-wrap: wrap;        /* Allow items to wrap */
-  gap: 20px;              /* Spacing between items */
-  justify-content: center;  /* Center items horizontally */
-  padding: 10px 0;        /* Add some padding */
-  margin-bottom: 30px;    /* <<< SPACE BELOW LIST / ABOVE CONTROLS >>> */
-  min-height: 100px;      /* Give it some height even when empty */
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  padding: 10px 0;
+  margin-bottom: 30px;
+  min-height: 100px; 
 }
 
-/* Styles for the container around each individual media item */
 .image-item-container {
-  border: 1px solid #3a3f4d; /* Match theme border */
+  border: 1px solid #3a3f4d;
   padding: 15px;
   border-radius: 8px;
-  background-color: #2c303a; /* Slightly different background for item cards */
+  background-color: #2c303a;
   color: #e0e0e0;
-  width: 210px; /* Adjust width as needed */
+  width: 210px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -65,197 +60,189 @@
   box-sizing: border-box;
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
+
 .image-item-container:hover {
     transform: translateY(-3px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-
-/* Style for both image and video elements */
 .media-item {
   max-width: 100%;
-  height: 160px; /* Increased height for media preview */
+  height: 160px;
   object-fit: cover;
   display: block;
   margin-bottom: 10px;
-  background-color: #3a3f4d; /* Darker placeholder background */
+  background-color: #3a3f4d;
   border-radius: 4px;
 }
+
 .video-item {
-  object-fit: contain; /* Contain preserves aspect ratio for video */
+  object-fit: contain;
 }
 
-/* Fallback style for error state */
 .media-fallback {
   width: 100%;
-  height: 160px; /* Match media height */
+  height: 160px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  background-color: #3a3f4d; /* Darker placeholder */
-  color: #adb5bd; /* Muted text */
+  background-color: #3a3f4d;
+  color: #adb5bd;
   font-size: 0.9em;
   padding: 10px;
   box-sizing: border-box;
   border-radius: 4px;
   margin-bottom: 10px;
 }
+
 .media-fallback.error {
-    color: #f8d7da; /* Light red text */
-    border: 1px dashed #dc3545; /* Dashed red border */
+    color: #f8d7da;
+    border: 1px dashed #dc3545;
 }
+
 .media-fallback a {
     margin-top: 8px;
     font-size: 0.8em;
-    color: #0d6efd; /* Link color */
+    color: #0d6efd;
     text-decoration: underline;
 }
+
 .media-fallback a:hover {
     color: #3b8eff;
 }
 
-
-/* Style for the hash display */
 .image-hash {
     font-size: 0.75rem;
-    color: #adb5bd; /* Muted gray */
-    margin-bottom: 12px; /* More space below hash */
+    color: #adb5bd;
+    margin-bottom: 12px;
     word-break: break-all;
     font-family: monospace;
-    width: 100%; /* Ensure it takes width for centering */
-    padding: 0 5px; /* Prevent text touching edges */
+    width: 100%;
+    padding: 0 5px;
 }
 
-/* Container for verification status and button */
 .verification-section {
-    margin-top: auto; /* Push verification to the bottom */
+    margin-top: auto;
     padding-top: 12px;
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px; /* Increased gap */
-    border-top: 1px solid #3a3f4d; /* Separator line */
+    gap: 10px;
+    border-top: 1px solid #3a3f4d;
 }
 
-/* Style for the verification status text */
 .verification-status {
     font-size: 0.8rem;
     font-weight: 500;
     padding: 4px 8px;
     border-radius: 4px;
-    min-width: 90px; /* Give status text slightly more width */
-    text-align: center; /* Ensure text inside is centered */
+    min-width: 90px;
+    text-align: center;
 }
 
-/* Status-specific colors (Dark Theme) */
-.status-idle { background-color: #495057; color: #ced4da; } /* Gray */
-.status-verifying { background-color: #ffc107; color: #000; } /* Amber/Yellow */
-.status-verified { background-color: #198754; color: white; } /* Green */
-.status-mismatch { background-color: #dc3545; color: white; } /* Red */
-.status-error { background-color: #ffca2c; color: #333; border: 1px solid #dc3545;} /* Amber bg, Red border */
+.status-idle { background-color: #495057; color: #ced4da; }
+.status-verifying { background-color: #ffc107; color: #000; }
+.status-verified { background-color: #198754; color: white; }
+.status-mismatch { background-color: #dc3545; color: white; }
+.status-error { background-color: #ffca2c; color: #333; border: 1px solid #dc3545;}
 
-
-/* Style for the verification button */
 .verify-button {
-    /* Inherit general .button styles from App.css or define here */
     padding: 6px 12px;
     font-size: 0.8rem;
-    background-color: #6c757d; /* Secondary/Gray color */
+    background-color: #6c757d;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.2s;
 }
+
 .verify-button:hover:not(:disabled) {
     background-color: #5a6268;
 }
+
 .verify-button:disabled {
     opacity: 0.6;
     cursor: not-allowed;
 }
 
-
-/* Styles for controls (input/button) at the bottom of the Display component */
 .controls {
   text-align: center;
-  padding: 15px 0 0 0; /* Padding top, remove bottom padding if margin is used */
+  padding: 15px 0 0 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 15px; /* <<< SPACE BETWEEN INPUT AND BUTTON >>> */
+  gap: 15px;
   flex-wrap: wrap;
-  margin-top: 20px; /* <<< SPACE ABOVE CONTROLS / BELOW LIST >>> */
-  border-top: 1px solid #3a3f4d; /* Separator line */
+  margin-top: 20px;
+  border-top: 1px solid #3a3f4d;
 }
 
 .controls .address {
-    padding: 9px 12px; /* Match button padding */
-    border: 1px solid #495057; /* Darker border */
-    border-radius: 6px; /* Match button */
-    background-color: #343a40; /* Dark input bg */
-    color: #e0e0e0; /* Light text */
+    padding: 9px 12px;
+    border: 1px solid #495057;
+    border-radius: 6px;
+    background-color: #343a40;
+    color: #e0e0e0;
     min-width: 250px;
     flex-grow: 1;
     max-width: 400px;
     font-size: 0.9rem;
 }
+
 .controls .address::placeholder {
-    color: #6c757d; /* Muted placeholder text */
+    color: #6c757d;
 }
 
 
 .controls .button {
-    /* Use general .button styles from App.css */
-    padding: 10px 18px; /* Match general button */
-    background-color: #198754; /* Green color for "Get Data" */
+    padding: 10px 18px;
+    background-color: #198754;
     color: white;
     flex-shrink: 0;
 }
+
 .controls .button:hover:not(:disabled) {
     background-color: #157347;
 }
 
 .item-actions {
-  display: flex;            /* Arrange buttons in a row */
-  justify-content: center;  /* Center buttons horizontally */
-  gap: 10px;                /* Space between buttons */
-  width: 100%;              /* Take full width within the card */
-  margin-top: 15px;         /* Space above the action buttons */
-  padding-top: 15px;        /* Padding above if using a border */
-  border-top: 1px solid #3a3f4d; /* Optional separator line */
+  display: flex;           
+  justify-content: center; 
+  gap: 10px;               
+  width: 100%;             
+  margin-top: 15px;       
+  padding-top: 15px;
+  border-top: 1px solid #3a3f4d;
 }
 
-/* Specific styling for the Share Button */
 .share-button {
-  /* Inherits base .button styles */
-  background-color: #0d6efd; /* Blue color for primary action */
+  background-color: #0d6efd;
   color: white;
-  border: none; /* Remove border if base button has one */
-  padding: 6px 14px; /* Adjust padding for consistency */
-  font-size: 0.85rem; /* Adjust font size for consistency */
+  border: none;
+  padding: 6px 14px;
+  font-size: 0.85rem;
 }
+
 .share-button:hover:not(:disabled) {
-  background-color: #0b5ed7; /* Darker blue on hover */
+  background-color: #0b5ed7;
 }
 
-/* Specific styling for the Trace Button */
 .trace-button {
-  /* Inherits base .button styles */
-  background-color: #6c757d; /* Gray color for secondary action */
+  background-color: #6c757d;
   color: white;
-  border: none; /* Remove border if base button has one */
-  padding: 6px 14px; /* Match share button padding */
-  font-size: 0.85rem; /* Match share button font size */
-}
-.trace-button:hover:not(:disabled) {
-  background-color: #5a6268; /* Darker gray on hover */
+  border: none;
+  padding: 6px 14px;
+  font-size: 0.85rem;
 }
 
-/* Ensure disabled states look consistent if not handled by base .button */
+.trace-button:hover:not(:disabled) {
+  background-color: #5a6268;
+}
+
 .share-button:disabled,
 .trace-button:disabled {
   opacity: 0.6;
