@@ -100,6 +100,10 @@ cd BlockChain-Course-Project
 
 ## Running the Application (Local Development)
 
+### Please see this video on how to start the Application :-
+  
+    https://youtu.be/aRHTKzFZOkw?si=3DcqbRniiuajmQTQ
+
 ### 1. Start Backend Nodes
 For the consensus mechanism, you need to run three instances of the Flask backend, each on a different port specified in client/src/components/FileUpload.jsx (e.g., 5001, 5002, 5003).
 
